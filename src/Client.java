@@ -6,6 +6,21 @@ import java.net.Socket;
 public class Client
 {
 	private static Socket socket;
+
+	private boolean verifyIp(String ip){
+		String [] addressArray = ip.split("\\.");
+		boolean isCoherent = true;
+
+		for (int i = 0; i < 4 || isCoherent; i++) {
+			int part = Integer.parseInt(addressArray[i]);
+			if(part<0 || part>255){
+				isCoherent = false;
+			}
+		}
+
+		return isCoherent;
+	}
+
 	
 	public static void main(String[] args) throws Exception {
 
@@ -16,17 +31,7 @@ public class Client
 
 		String serverAddress = input.nextLine();
 
-		String [] addressArray = serverAddress.split("\\.");
 
-		int[] ip = new int[4];
-
-		boolean isCoherent = true;
-		for (int i = 0; i < 4 || isCoherent; i++) {
-			ip[i] = Integer.parseInt(addressArray[i]);
-			if(ip[i]<0 || ip[i]>255){
-				isCoherent = false;
-			}
-		}
 
 
 
