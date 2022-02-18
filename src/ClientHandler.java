@@ -1,5 +1,7 @@
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,24 +9,26 @@ import java.net.Socket;
 public class ClientHandler extends Thread
 {
     private Socket socket;
-    private int clientNumber;
+    private String username;
+    private String password;
 
-    public ClientHandler(Socket socket, int clientNumber)
+    public ClientHandler(Socket socket)
     {
         this.socket = socket;
-        this.clientNumber = clientNumber;
-        System.out.println("New connection with client# " + clientNumber + " at " + socket);
     }
     public void run()
     {
         try
         {
-            DataOutputStream out = new DataOutputStream((socket.getOutputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            out.writeUTF("Hello from server - you are client# " + clientNumber);
+            username = in.readLine();
+            password = in.readLine();
+
+            System.out.println(username + " " + password);
         } catch (IOException e)
         {
-            System.out.println("Error handling client# " + clientNumber + ": " + e);
+            System.out.println("Error handling client " + e);
 
         }
         finally
@@ -36,7 +40,7 @@ public class ClientHandler extends Thread
             catch(IOException e){
                 System.out.println("Couldn't close  a socket, what's going on?");
             }
-            System.out.println("Connection with client# " + clientNumber + " closed");
+            System.out.println("Connection with client# " + " closed");
         }
     }
 }
