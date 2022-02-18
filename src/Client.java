@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.net.Socket;
 
@@ -7,21 +8,20 @@ public class Client
 	private static Socket socket;
 
 	private static boolean verifyIp(String ip){
-		String [] addressArray = ip.split("\\.");
-		if(addressArray.length != 4){
+		String [] groups = ip.split("\\.");
+		if(groups.length != 4){
 			return false;
 		}
 
-		boolean isCoherent = true;
-		for (int i = 0; i < 4 ; i++) {
-			int part = Integer.parseInt(addressArray[i]);
-			if(part<0 || part>255){
-				isCoherent = false;
-				break;
-			}
+		try {
+			return Arrays.stream(groups)
+					.filter(s -> s.length() > 1 && s.startsWith("0"))
+					.map(Integer::parseInt)
+					.filter(i -> (i >= 0 && i <= 255))
+					.count() == 4;
+		} catch (NumberFormatException e) {
+			return false;
 		}
-
-		return isCoherent;
 	}
 
 	
@@ -41,10 +41,12 @@ public class Client
 
 		System.out.println("Port d'ecoute:");
 		int port = input.nextInt();
+		input.nextLine();
 
 		while(port>5050 || port <5000){
 			System.out.println("Veuillez rentrer un port entre 5000 et 5050:");
 			port = input.nextInt();
+			input.nextLine();
 		}
 
 		socket = new Socket(serverAddress, port);

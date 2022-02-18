@@ -4,32 +4,20 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Server {
-	private static ServerSocket listener;
+	private ServerSocket listener;
 
-	private static boolean verifyIp(String ip){
-		String [] addressArray = ip.split("\\.");
-		if(addressArray.length != 4){
-			return false;
-		}
+	private Map<String, String> authenticationMap;
 
-		boolean isCoherent = true;
-		for (int i = 0; i < 4 ; i++) {
-			int part = Integer.parseInt(addressArray[i]);
-			if(part<0 || part>255){
-				isCoherent = false;
-				break;
-			}
-		}
-
-		return isCoherent;
+	public Server(){
+		authenticationMap = new HashMap<String, String>();
 	}
 
-	public static void main(String[] args) throws Exception {
-
-		int clientNumber = 0;
+	public void execute() throws IOException {
 
 		Scanner input = new Scanner(System.in);
 
@@ -47,22 +35,53 @@ public class Server {
 			System.out.println("Veuillez rentrer un port entre 5000 et 5050:");
 			serverPort = input.nextInt();
 		}
-		
-		listener = new ServerSocket();
-		listener.setReuseAddress(true);
+
+		this.listener = new ServerSocket();
+		this.listener.setReuseAddress(true);
 		InetAddress serverIP = InetAddress.getByName(serverAddress);
-		
+
 		listener.bind(new InetSocketAddress(serverIP, serverPort));
-		
+
 		System.out.format("The server is running on %s:%d%n", serverAddress, serverPort);
-		
+
 		try {
 			while (true) {
-				new ClientHandler(listener.accept()).start();
+				new ClientHandler(listener.accept(), this).start();
 			}
 		}
 		finally {
 			listener.close();
 		}
-		
+
+	}
+
+	public boolean userExists(String username){
+		return this.authenticationMap.containsKey(username);
+	}
+
+	public boolean verifyCredentials(String username, String password){
+		return this.authenticationMap.get(username).equals(password);
+	}
+
+	private static boolean verifyIp(String ip){
+		String [] addressArray = ip.split("\\.");
+		if(addressArray.length != 4) {
+			return false;
+		}
+
+		boolean isCoherent = true;
+		for (int i = 0; i < 4 ; i++) {
+			int part = Integer.parseInt(addressArray[i]);
+			if(part<0 || part>255){
+				isCoherent = false;
+				break;
+			}
+		}
+
+		return isCoherent;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Server server = new Server();
+		server.execute();
 	}}
