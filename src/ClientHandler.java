@@ -1,21 +1,35 @@
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
 
 public class ClientHandler extends Thread
 {
-    private Socket socket;
-    private Server server;
+    private final Socket socket;
+    private final String ip;
+    private final int port;
+    private final Server chatServer;
+    private String username;
+    private PrintWriter out;
 
     public ClientHandler(Socket socket, Server server)
     {
         this.socket = socket;
-        this.server = server;
+        this.chatServer = server;
+        this.port = socket.getPort();
+        this.ip = socket.getInetAddress().toString();
+        try {
+            this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+        }catch (IOException e){
+            System.out.println("Error handling client " + e);
+        }
+    }
+
+    public void sendMessage(String message){
+        out.println(message);
+        out.flush();
     }
 
     public void run()
@@ -23,23 +37,39 @@ public class ClientHandler extends Thread
         try
         {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            String username = in.readLine();
+            this.username = in.readLine();
             String password = in.readLine();
 
-            System.out.println(username + " " + password);
+            System.out.println(this.username + " " + password);
 
-            if(server.userExists(username)){
-                if(server.verifyCredentials(username, password)){
-                    
-                }
+            boolean isConnected = false;
+
+            if(chatServer.userExists(username)){
+                if(!chatServer.verifyCredentials(username, password)){
+                    out.println("Erreur dans la saisie du mot de passe");
+                    out.flush();
+                }else
+                    isConnected=true;
+            }else{
+                chatServer.addUser(username, password);
+                isConnected = true;
             }
+            out.println("Conecté a la salle de chat");
+            out.flush();
 
+            String message;
+
+            while(isConnected){
+                message = in.readLine();
+                if(message!=null && message.equals("disconnect")){
+                    isConnected = false;
+                }
+                chatServer.postMessage(new Server.Message(this.username, this.ip, this.port, message));
+            }
 
         } catch (IOException e)
         {
             System.out.println("Error handling client " + e);
-
         }
         finally
         {

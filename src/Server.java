@@ -4,49 +4,36 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Server {
 	private ServerSocket listener;
-
-	private Map<String, String> authenticationMap;
+	private Map<String, String> credentialsMap;
+	private Set<ClientHandler> clientHandlers = new HashSet<>();
+	private ArrayList<Message> messages;
 
 	public Server(){
-		authenticationMap = new HashMap<String, String>();
+		this.credentialsMap = new HashMap<String, String>();
+		this.messages = new ArrayList<>();
 	}
 
-	public void execute() throws IOException {
-
-		Scanner input = new Scanner(System.in);
-
-		System.out.println("Adresse IP du serveur:");
-		String serverAddress = input.nextLine();
-
-		while(!verifyIp(serverAddress)){
-			System.out.println("Veuillez entrer une adresse valide:");
-			serverAddress = input.nextLine();
-		}
-		System.out.println("Port d'ecoute:");
-		int serverPort = input.nextInt();
-
-		while(serverPort>5050 || serverPort <5000){
-			System.out.println("Veuillez rentrer un port entre 5000 et 5050:");
-			serverPort = input.nextInt();
-		}
+	public void execute() throws Exception {
+		IpUtils.ServerLocation serverLocation = IpUtils.getServerLocation();
 
 		this.listener = new ServerSocket();
 		this.listener.setReuseAddress(true);
-		InetAddress serverIP = InetAddress.getByName(serverAddress);
+		InetAddress serverIP = InetAddress.getByName(serverLocation.ip());
 
-		listener.bind(new InetSocketAddress(serverIP, serverPort));
+		listener.bind(new InetSocketAddress(serverIP, serverLocation.port()));
 
-		System.out.format("The server is running on %s:%d%n", serverAddress, serverPort);
+		System.out.format("The server is running on %s:%d%n", serverLocation.ip(), serverLocation.port());
 
 		try {
 			while (true) {
-				new ClientHandler(listener.accept(), this).start();
+				ClientHandler client = new ClientHandler(listener.accept(), this);
+				this.clientHandlers.add(client);
+
+				client.start();
 			}
 		}
 		finally {
@@ -56,32 +43,36 @@ public class Server {
 	}
 
 	public boolean userExists(String username){
-		return this.authenticationMap.containsKey(username);
+		return this.credentialsMap.containsKey(username);
 	}
 
 	public boolean verifyCredentials(String username, String password){
-		return this.authenticationMap.get(username).equals(password);
+		return userExists(username) && this.credentialsMap.get(username).equals(password);
 	}
 
-	private static boolean verifyIp(String ip){
-		String [] addressArray = ip.split("\\.");
-		if(addressArray.length != 4) {
+	public boolean addUser(String username, String password){
+		if(!userExists(username)){
+			this.credentialsMap.put(username, password);
+			return true;
+		}else{
 			return false;
 		}
+	}
 
-		boolean isCoherent = true;
-		for (int i = 0; i < 4 ; i++) {
-			int part = Integer.parseInt(addressArray[i]);
-			if(part<0 || part>255){
-				isCoherent = false;
-				break;
-			}
+	public void postMessage(Message message){
+		// TODO: implementer la structure du message
+		this.messages.add(message);
+		String messageString = '[' + message.username() + " - " + message.ip() + ':' + message.port() + "]:" + message.response();
+		for (ClientHandler client : clientHandlers) {
+			client.sendMessage(messageString);
 		}
-
-		return isCoherent;
+		System.out.println(messageString);
 	}
 
 	public static void main(String[] args) throws Exception {
 		Server server = new Server();
 		server.execute();
-	}}
+	}
+
+	record Message(String username, String ip, int port, String response){}
+}
