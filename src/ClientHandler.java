@@ -19,7 +19,7 @@ public class ClientHandler extends Thread
         this.socket = socket;
         this.chatServer = server;
         this.port = socket.getPort();
-        this.ip = socket.getInetAddress().toString();
+        this.ip = socket.getInetAddress().getHostAddress();
         try {
             this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         }catch (IOException e){
