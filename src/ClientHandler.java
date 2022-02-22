@@ -40,11 +40,12 @@ public class ClientHandler extends Thread
             this.username = in.readLine();
             String password = in.readLine();
 
-            System.out.println(this.username + " " + password);
+            System.out.println(this.username + " bobette " + password);
 
             boolean isConnected = false;
 
             if(chatServer.userExists(username)){
+                System.out.println("User exists");
                 if(!chatServer.verifyCredentials(username, password)){
                     out.println("Erreur dans la saisie du mot de passe");
                     out.flush();
@@ -54,6 +55,7 @@ public class ClientHandler extends Thread
                 chatServer.addUser(username, password);
                 isConnected = true;
             }
+            System.out.println(chatServer.getMap());
             out.println("Conecté a la salle de chat");
             out.flush();
 

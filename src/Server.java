@@ -1,5 +1,4 @@
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -12,9 +11,27 @@ public class Server {
 	private Set<ClientHandler> clientHandlers = new HashSet<>();
 	private ArrayList<Message> messages;
 
-	public Server(){
-		this.credentialsMap = new HashMap<String, String>();
+	public Server() throws IOException {
+		this.buildCredentialsMap();
 		this.messages = new ArrayList<>();
+
+		System.out.println(this.credentialsMap.containsKey("Baba"));
+	}
+
+	private void buildCredentialsMap() throws IOException {
+		this.credentialsMap = new HashMap<String, String>();
+		BufferedReader br = new BufferedReader(new FileReader("src/users.csv"));
+		String line =  null;
+
+		while((line=br.readLine())!=null) {
+			String str[] = line.split(",");
+			System.out.println(str[0]);
+			System.out.println(this.credentialsMap.keySet());
+			this.credentialsMap.put(str[0], str[1]);
+		}
+
+		this.credentialsMap.put("Koko", "B Ware");
+		System.out.println(this.credentialsMap.keySet());
 	}
 
 	public void execute() throws Exception {
@@ -57,6 +74,10 @@ public class Server {
 		}else{
 			return false;
 		}
+	}
+
+	public Map getMap(){
+		return this.credentialsMap;
 	}
 
 	public void postMessage(Message message){
