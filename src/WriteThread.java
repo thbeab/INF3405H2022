@@ -23,8 +23,13 @@ public class WriteThread extends Thread {
         Scanner input = new Scanner(System.in);
         do {
             response = input.nextLine();
-            writer.println(response);
-            writer.flush();
+            if(response.length()<200) {
+                writer.println(response);
+                writer.flush();
+            }
+            else{
+                System.out.println("Votre message ne peut pas dépasser 200 caractères");
+            }
         } while (!response.equals("disconnect"));
 
         try {
