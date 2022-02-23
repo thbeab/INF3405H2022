@@ -88,8 +88,13 @@ public class Server {
 		return this.credentialsMap;
 	}
 
-	public void postMessage(Message message){
+	public void postMessage(Message message) throws IOException {
 		this.messages.add(message);
+		FileWriter writer = new FileWriter("src/messages.csv", true);
+		String CSVMessage = message.username()+','+message.ip()+','+ message.port()+',' + message.dateTime()+",\""+message.response() +"\"\n";
+		writer.append(CSVMessage);
+		writer.flush();
+		writer.close();
 		String messageString = "[" + message.username() + " - " + message.ip() + ":" + message.port() + " - " + message.dateTime() + "]: " + message.response();
 		for (ClientHandler client : clientHandlers) {
 			client.sendMessage(messageString);
@@ -97,10 +102,27 @@ public class Server {
 		System.out.println(messageString);
 	}
 
+	public List<Message> get15LastMessages(){
+		int messageCount = 0;
+		int position = this.messages.size()-1;
+		List<Message> lastMessages = new ArrayList<>();
+		while(messageCount < 15 && position >= 0){
+			lastMessages.add(messages.get(position));
+			position--;
+			messageCount++;
+		}
+		return lastMessages;
+	}
+
 	public static void main(String[] args) throws Exception {
 		Server server = new Server();
 		server.execute();
 	}
 
-	record Message(String username, String ip, int port, String dateTime, String response){}
+	record Message(String username, String ip, int port, String dateTime, String response){
+		@Override
+		public String toString(){
+			return "[" + this.username + " - " + this.ip + ":" + this.port + " - " + this.dateTime + "]: " + this.response;
+		}
+	}
 }

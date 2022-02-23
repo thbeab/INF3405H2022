@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InvalidPropertiesFormatException;
+import java.util.List;
 import java.util.Map;
 
 public class ClientHandler extends Thread
@@ -59,11 +60,18 @@ public class ClientHandler extends Thread
                 writer.close();
                 isConnected = true;
             }
-            out.println("Connecté a la salle de chat");
-            out.flush();
+
+            if(isConnected) {
+                out.println("Connecté a la salle de chat");
+                out.flush();
+                List<Server.Message> messageList = chatServer.get15LastMessages();
+                for(Server.Message m:messageList){
+                    out.println(m.toString());
+                }
+                out.flush();
+            }
 
             String message;
-
             while(isConnected){
                 message = in.readLine();
                 if(message!=null && message.equals("disconnect")){
