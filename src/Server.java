@@ -84,10 +84,6 @@ public class Server {
 		}
 	}
 
-	public Map getMap(){
-		return this.credentialsMap;
-	}
-
 	public void postMessage(Message message) throws IOException {
 		this.messages.add(message);
 		FileWriter writer = new FileWriter("src/messages.csv", true);
@@ -95,11 +91,10 @@ public class Server {
 		writer.append(CSVMessage);
 		writer.flush();
 		writer.close();
-		String messageString = "[" + message.username() + " - " + message.ip() + ":" + message.port() + " - " + message.dateTime() + "]: " + message.response();
 		for (ClientHandler client : clientHandlers) {
-			client.sendMessage(messageString);
+			client.sendMessage(message.toString());
 		}
-		System.out.println(messageString);
+		System.out.println(message.toString());
 	}
 
 	public List<Message> get15LastMessages(){
