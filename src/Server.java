@@ -14,8 +14,6 @@ public class Server {
 	public Server() throws IOException {
 		this.buildCredentialsMap();
 		this.messages = new ArrayList<>();
-
-		System.out.println(this.credentialsMap.containsKey("Baba"));
 	}
 
 	private void buildCredentialsMap() throws IOException {
@@ -25,13 +23,8 @@ public class Server {
 
 		while((line=br.readLine())!=null) {
 			String str[] = line.split(",");
-			System.out.println(str[0]);
-			System.out.println(this.credentialsMap.keySet());
-			this.credentialsMap.put(str[0], str[1]);
+			this.credentialsMap.put(str[0].trim().replace("\ufeff", ""), str[1].trim().replace("\ufeff", ""));
 		}
-
-		this.credentialsMap.put("Koko", "B Ware");
-		System.out.println(this.credentialsMap.keySet());
 	}
 
 	public void execute() throws Exception {
@@ -67,7 +60,7 @@ public class Server {
 		return userExists(username) && this.credentialsMap.get(username).equals(password);
 	}
 
-	public boolean addUser(String username, String password){
+	public boolean addUser(String username, String password) throws IOException {
 		if(!userExists(username)){
 			this.credentialsMap.put(username, password);
 			return true;
