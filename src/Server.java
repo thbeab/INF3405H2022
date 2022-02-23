@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 public class Server {
 	private ServerSocket listener;
@@ -60,9 +62,10 @@ public class Server {
 	}
 
 	public void postMessage(Message message){
-		// TODO: implementer la structure du message
 		this.messages.add(message);
-		String messageString = '[' + message.username() + " - " + message.ip() + ':' + message.port() + "]:" + message.response();
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime messageDate = LocalDateTime.now();
+		String messageString = "[" + message.username() + " - " + message.ip() + ":" + message.port() + " - " + dateFormat.format(messageDate) + "]: " + message.response();
 		for (ClientHandler client : clientHandlers) {
 			client.sendMessage(messageString);
 		}
