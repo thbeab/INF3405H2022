@@ -2,7 +2,10 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.InvalidPropertiesFormatException;
+import java.util.List;
 import java.util.Map;
 
 public class ClientHandler extends Thread
@@ -57,17 +60,26 @@ public class ClientHandler extends Thread
                 writer.close();
                 isConnected = true;
             }
-            out.println("Connecté a la salle de chat");
-            out.flush();
+
+            if(isConnected) {
+                out.println("Connecté a la salle de chat");
+                out.flush();
+                List<Server.Message> messageList = chatServer.get15LastMessages();
+                for(Server.Message m:messageList){
+                    out.println(m.toString());
+                }
+                out.flush();
+            }
 
             String message;
-
             while(isConnected){
                 message = in.readLine();
                 if(message!=null && message.equals("disconnect")){
                     isConnected = false;
                 }
-                chatServer.postMessage(new Server.Message(this.username, this.ip, this.port, message));
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss");
+                LocalDateTime dateTime = LocalDateTime.now();
+                chatServer.postMessage(new Server.Message(this.username, this.ip, this.port, dateFormat.format(dateTime), message));
             }
 
         } catch (IOException e)
