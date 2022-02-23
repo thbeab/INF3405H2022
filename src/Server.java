@@ -37,6 +37,9 @@ public class Server {
 
 		while((line=br.readLine())!=null) {
 			String str[] = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+			if(str.length!=5){
+				break;
+			}
 			message = new Message(str[0], str[1], Integer.parseInt(str[2]), str[3], str[4].trim().replace("\"",""));
 			this.messages.add(message);
 		}
@@ -94,15 +97,14 @@ public class Server {
 		for (ClientHandler client : clientHandlers) {
 			client.sendMessage(message.toString());
 		}
-		System.out.println(message.toString());
 	}
 
 	public List<Message> get15LastMessages(){
 		int messageCount = 0;
 		int position = this.messages.size()-1;
-		List<Message> lastMessages = new ArrayList<>();
+		LinkedList<Message> lastMessages = new LinkedList<>();
 		while(messageCount < 15 && position >= 0){
-			lastMessages.add(messages.get(position));
+			lastMessages.addFirst(messages.get(position));
 			position--;
 			messageCount++;
 		}
