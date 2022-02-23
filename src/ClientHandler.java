@@ -16,6 +16,7 @@ public class ClientHandler extends Thread
     private final Server chatServer;
     private String username;
     private PrintWriter out;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss");
 
     public ClientHandler(Socket socket, Server server)
     {
@@ -72,13 +73,10 @@ public class ClientHandler extends Thread
             }
 
             String message;
+            LocalDateTime dateTime;
             while(isConnected){
                 message = in.readLine();
-                if(message!=null && message.equals("disconnect")){
-                    isConnected = false;
-                }
-                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss");
-                LocalDateTime dateTime = LocalDateTime.now();
+                dateTime = LocalDateTime.now();
                 chatServer.postMessage(new Server.Message(this.username, this.ip, this.port, dateFormat.format(dateTime), message));
             }
 
