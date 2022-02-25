@@ -67,9 +67,16 @@ public class ClientHandler extends Thread
                 out.flush();
                 List<Server.Message> messageList = chatServer.get15LastMessages();
                 for(Server.Message m:messageList){
-                    out.println(m.toString());
+                	try
+                    {
+                      Thread.sleep(1);
+                    }
+                    catch(InterruptedException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    out.flush();
                 }
-                out.flush();
             }
 
             String message;

@@ -13,6 +13,11 @@ public final class IpUtils {
                     "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
 
     private static final Pattern IPv4_PATTERN = Pattern.compile(IPV4_REGEX);
+    
+    private static final String PORT_REGEX =
+            "^(50[0-4][0-9]|5050)$";
+
+    private static final Pattern PORT_PATTERN = Pattern.compile(PORT_REGEX);
 
     private IpUtils() {}
 
@@ -23,6 +28,17 @@ public final class IpUtils {
         }
 
         Matcher matcher = IPv4_PATTERN.matcher(ip);
+
+        return matcher.matches();
+    }
+    
+    private static boolean isValidPort(String port)
+    {
+        if (port == null) {
+            return false;
+        }
+
+        Matcher matcher = PORT_PATTERN.matcher(port);
 
         return matcher.matches();
     }
@@ -41,15 +57,13 @@ public final class IpUtils {
         }
 
         System.out.println("Port d'ecoute:");
-        int port = input.nextInt();
-        input.nextLine();
+        String port = input.nextLine();
 
-        while(port>5050 || port <5000){
-            System.out.println("Veuillez rentrer un port entre 5000 et 5050:");
-            port = input.nextInt();
-            input.nextLine();
+        while(!isValidPort(port)){
+        	System.out.println("Veuillez rentrer un port entre 5000 et 5050:");
+            port = input.nextLine();
         }
 
-        return new ServerLocation(ip, port);
+        return new ServerLocation(ip, Integer.parseInt(port));
     }
 }
