@@ -2,11 +2,15 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.*;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
 
+/**
+ * Server
+ * <p>Permet la connexion entre les clients.<p>
+ * 
+ * @author Thomas Beaugendre (1964902), Marilee Demonceaux (1956712), Véronica Rabanal-Duchesne (1956734)
+ *
+ */
 public class Server {
 	private ServerSocket listener;
 	private Map<String, String> credentialsMap;
@@ -17,6 +21,11 @@ public class Server {
 		this.buildCredentialsMap();
 		this.loadMessages();
 	}
+	
+	/**
+	 * Rempli la HashMap avec les utilisateurs et passwords de la base de données
+	 * @throws IOException
+	 */
 
 	private void buildCredentialsMap() throws IOException {
 		this.credentialsMap = new HashMap<String, String>();
@@ -28,7 +37,11 @@ public class Server {
 			this.credentialsMap.put(str[0].trim().replace("\ufeff", ""), str[1].trim().replace("\ufeff", ""));
 		}
 	}
-
+	
+	/**
+	 * Ajoute les messages de la base de données dans une liste
+	 * @throws IOException
+	 */
 	private void loadMessages() throws IOException {
 		this.messages = new ArrayList<>();
 		BufferedReader br = new BufferedReader(new FileReader("src/messages.csv"));
@@ -45,6 +58,10 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Permet de démarrer le serveur
+	 * @throws Exception
+	 */
 	public void execute() throws Exception {
 		IpUtils.ServerLocation serverLocation = IpUtils.getServerLocation();
 
@@ -69,15 +86,36 @@ public class Server {
 		}
 
 	}
-
+	
+	/**
+	 * Permet de vérifier si l'utilisateur existe dans la liste d'utilisateur provenant de la base de données
+	 * @param username
+	 * @return true is credentialsMap contient l'utilisateur;
+	 * 			false sinon.
+	 */
 	public boolean userExists(String username){
 		return this.credentialsMap.containsKey(username);
 	}
+	
+	/**
+	 * Permet de vérifier si le mot de passe correspond 
+	 * @param username
+	 * @param password
+	 * @return true si le mot de passe correspond à l'utilisateur;
+	 * 			faux, sinon.
+	 */
 
 	public boolean verifyCredentials(String username, String password){
 		return userExists(username) && this.credentialsMap.get(username).equals(password);
 	}
 
+	/**
+	 * Permet d'ajouter un utilisateur et le mot de passe s'il n'existe pas dans la liste des utilisateurs
+	 * @param username
+	 * @param password
+	 * @return vrai si un utilisateur a été ajouté à la liste, faux sinon
+	 * @throws IOException
+	 */
 	public boolean addUser(String username, String password) throws IOException {
 		if(!userExists(username)){
 			this.credentialsMap.put(username, password);
@@ -87,6 +125,11 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Permet d'ajouter les messages dans la base de données
+	 * @param message
+	 * @throws IOException
+	 */
 	public void postMessage(Message message) throws IOException {
 		this.messages.add(message);
 		FileWriter writer = new FileWriter("src/messages.csv", true);
@@ -99,6 +142,10 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Permet de prendre les 15 derniers messages de la liste des messages provenant de la base de données. 
+	 * @return lastMessages
+	 */
 	public List<Message> get15LastMessages(){
 		int messageCount = 0;
 		int position = this.messages.size()-1;
@@ -110,11 +157,19 @@ public class Server {
 		}
 		return lastMessages;
 	}
+	
+	/**
+	 * Instanciation du serveur
+	 * @param args
+	 * @throws Exception
+	 */
 
 	public static void main(String[] args) throws Exception {
 		Server server = new Server();
 		server.execute();
 	}
+	
+
 
 	record Message(String username, String ip, int port, String dateTime, String response){
 		@Override
