@@ -8,7 +8,7 @@ import java.util.*;
  * Server
  * <p>Permet la connexion entre les clients.<p>
  * 
- * @author Thomas Beaugendre (1964902), Marilee Demonceaux (1956712), Véronica Rabanal-Duchesne (1956734)
+ * @author Thomas Beaugendre (1964902), Marilee Demonceaux (1956712), VÃ©ronica Rabanal-Duchesne (1956734)
  *
  */
 public class Server {
@@ -23,7 +23,7 @@ public class Server {
 	}
 	
 	/**
-	 * Rempli la HashMap avec les utilisateurs et passwords de la base de données
+	 * Rempli la HashMap avec les utilisateurs et passwords de la base de donnÃ©es
 	 * @throws IOException
 	 */
 
@@ -39,7 +39,7 @@ public class Server {
 	}
 	
 	/**
-	 * Ajoute les messages de la base de données dans une liste
+	 * Ajoute les messages de la base de donnÃ©es dans une liste
 	 * @throws IOException
 	 */
 	private void loadMessages() throws IOException {
@@ -59,7 +59,7 @@ public class Server {
 	}
 
 	/**
-	 * Permet de démarrer le serveur
+	 * Permet de dÃ©marrer le serveur
 	 * @throws Exception
 	 */
 	public void execute() throws Exception {
@@ -88,9 +88,9 @@ public class Server {
 	}
 	
 	/**
-	 * Permet de vérifier si l'utilisateur existe dans la liste d'utilisateur provenant de la base de données
+	 * Permet de vÃ©rifier si l'utilisateur existe dans la liste d'utilisateur provenant de la base de donnÃ©es
 	 * @param username
-	 * @return true is credentialsMap contient l'utilisateur;
+	 * @return true si credentialsMap contient l'utilisateur;
 	 * 			false sinon.
 	 */
 	public boolean userExists(String username){
@@ -98,10 +98,10 @@ public class Server {
 	}
 	
 	/**
-	 * Permet de vérifier si le mot de passe correspond 
+	 * Permet de vÃ©rifier si le mot de passe correspond 
 	 * @param username
 	 * @param password
-	 * @return true si le mot de passe correspond à l'utilisateur;
+	 * @return true si le mot de passe correspond Ã  l'utilisateur;
 	 * 			faux, sinon.
 	 */
 
@@ -113,7 +113,7 @@ public class Server {
 	 * Permet d'ajouter un utilisateur et le mot de passe s'il n'existe pas dans la liste des utilisateurs
 	 * @param username
 	 * @param password
-	 * @return vrai si un utilisateur a été ajouté à la liste, faux sinon
+	 * @return vrai si un utilisateur a Ã©tÃ© ajoutÃ© Ã  la liste, faux sinon
 	 * @throws IOException
 	 */
 	public boolean addUser(String username, String password) throws IOException {
@@ -126,7 +126,7 @@ public class Server {
 	}
 
 	/**
-	 * Permet d'ajouter les messages dans la base de données
+	 * Permet d'ajouter les messages dans la base de donnÃ©es
 	 * @param message
 	 * @throws IOException
 	 */
@@ -143,7 +143,7 @@ public class Server {
 	}
 
 	/**
-	 * Permet de prendre les 15 derniers messages de la liste des messages provenant de la base de données. 
+	 * Permet de prendre les 15 derniers messages de la liste des messages provenant de la base de donnÃ©es. 
 	 * @return lastMessages
 	 */
 	public List<Message> get15LastMessages(){
