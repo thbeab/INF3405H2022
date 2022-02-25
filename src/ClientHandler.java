@@ -8,6 +8,11 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Permet la gestion de l'authentification au clavardage
+ * @author Thomas Beaugendre (1964902), Marilee Demonceaux (1956712) & Véronica Rabanal-Duchesne (1956734) (gr : 05)
+ *
+ */
 public class ClientHandler extends Thread
 {
     private final Socket socket;
@@ -18,6 +23,13 @@ public class ClientHandler extends Thread
     private PrintWriter out;
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss");
 
+    /**
+     * Constructeur de la classe ClientHandler
+     * On assigne notamment le socket, le serveur, le port et l'ip.
+     * On définit également un PrintWriter pour pouvoir afficher du côté Client
+     * @param socket contient les paramètres de connexion du serveur (ip, port)
+     * @param server l'instance du serveur auquel le client veut se connecter
+     */
     public ClientHandler(Socket socket, Server server)
     {
         this.socket = socket;
@@ -31,11 +43,22 @@ public class ClientHandler extends Thread
         }
     }
 
+    /**
+     * Permet d'envoyer un message dans le stream du Client
+     * @param message la chaine de caractères que l'on veut communiquer
+     */
     public void sendMessage(String message){
         out.println(message);
         out.flush();
     }
 
+    /**
+     * Vérification des identifiants de l'utilisateur et gestion
+     * de l'ajout de nouvel utilisateur. On présente également
+     * les 15 derniers messages au client lorsque celui-ci
+     * se connecte. Finalement, on envoie également au serveur les
+     * messages entrés par le client.
+     */
     public void run()
     {
         try
