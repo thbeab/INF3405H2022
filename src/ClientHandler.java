@@ -90,6 +90,7 @@ public class ClientHandler extends Thread
                 out.flush();
                 List<Server.Message> messageList = chatServer.get15LastMessages();
                 for(Server.Message m:messageList){
+                	out.println(m.toString());
                 	try
                     {
                       Thread.sleep(1);
