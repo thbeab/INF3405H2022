@@ -3,6 +3,11 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Vérifie la validité de l'adresse IP et du port entrés dans le serveur et le client
+ * @author Thomas Beaugendre (1964902), Marilee Demonceaux (1956712) & Véronica Rabanal-Duchesne (1956734) (gr : 05)
+ *
+ */
 public final class IpUtils {
     record ServerLocation(String ip, int port) {}
 
@@ -14,44 +19,41 @@ public final class IpUtils {
 
     private static final Pattern IPv4_PATTERN = Pattern.compile(IPV4_REGEX);
     
-    private static final String PORT_REGEX =
-            "^(50[0-4][0-9]|5050)$";
+    private static final String PORT_REGEX = "^(50[0-4][0-9]|5050)$";
 
     private static final Pattern PORT_PATTERN = Pattern.compile(PORT_REGEX);
 
     private IpUtils() {}
-
-    private static boolean isValidInet4Address(String ip)
-    {
-        if (ip == null) {
+    
+    /**
+     * Vérification du format d'une chaine de caractères selon un pattern donné
+     * @param string la chaine à vérifier
+     * @param pattern le format désiré
+     * @return si la chaine correspond au pattern
+     */
+    private static boolean isValidPattern(String string, Pattern pattern){
+        if (string == null) {
             return false;
         }
 
-        Matcher matcher = IPv4_PATTERN.matcher(ip);
+        Matcher matcher = pattern.matcher(string);
 
         return matcher.matches();
     }
     
-    private static boolean isValidPort(String port)
-    {
-        if (port == null) {
-            return false;
-        }
-
-        Matcher matcher = PORT_PATTERN.matcher(port);
-
-        return matcher.matches();
-    }
-
+    /**
+     * Analyse l'entrée des informations sur le serveur.
+     * S'assure que les informations fournies sont conformes
+     * @return l'objet ServerLocation contenant l'ip et le port du serveur
+     */
     public static ServerLocation getServerLocation(){
-        // Enter data using BufferReader
         Scanner input = new Scanner(System.in);
 
         System.out.println("Adresse IP du serveur:");
 
         String ip = input.nextLine();
 
-        while(!isValidInet4Address(ip)){
+        while(!isValidPattern(ip, IPv4_PATTERN)){
             System.out.println("Veuillez entrer une adresse valide:");
             ip = input.nextLine();
         }
@@ -59,7 +61,7 @@ public final class IpUtils {
         System.out.println("Port d'ecoute:");
         String port = input.nextLine();
 
-        while(!isValidPort(port)){
+        while(!isValidPattern(port, PORT_PATTERN)){
         	System.out.println("Veuillez rentrer un port entre 5000 et 5050:");
             port = input.nextLine();
         }
